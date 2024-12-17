@@ -1,0 +1,18 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+    "dependencies": [
+        "lldb-package",
+        {
+            "name": "7zip-tool",
+            "host": true
+        }
+    ],
+    "vcpkg-configuration": {
+        "overlay-ports": [
+            "vcpkg_overlay_ports"
+        ],
+        "overlay-triplets": [
+            "vcpkg_overlay_triplets"
+        ]
+    }
+}

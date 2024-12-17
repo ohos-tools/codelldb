@@ -1,0 +1,27 @@
+From 19d3a21e9d048a441cecffc76323b459548b9fda Mon Sep 17 00:00:00 2001
+From: yangerhang <yeh189@126.com>
+Date: Sun, 15 Dec 2024 01:07:17 +0800
+Subject: [PATCH 2/2] disable BUILD_SHARED_LIBS to prevent errors on msvc
+
+---
+ llvm/CMakeLists.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/llvm/CMakeLists.txt b/llvm/CMakeLists.txt
+index b27b07c7eeff..f3618e5f7a65 100644
+--- a/llvm/CMakeLists.txt
++++ b/llvm/CMakeLists.txt
+@@ -405,7 +405,9 @@ set(LLVM_EXPERIMENTAL_TARGETS_TO_BUILD ""
+ 
+ option(BUILD_SHARED_LIBS
+   "Build all libraries as shared libraries instead of static" OFF)
+-
++if(MSVC)
++  set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build all libraries as shared libraries instead of static" FORCE)
++endif()
+ option(LLVM_ENABLE_BACKTRACES "Enable embedding backtraces on crash." ON)
+ if(LLVM_ENABLE_BACKTRACES)
+   set(ENABLE_BACKTRACES 1)
+-- 
+2.46.0.windows.1
+

@@ -1,52 +1,89 @@
-# Features
-- Conditional breakpoints, function breakpoints, logpoints,
-- Hardware data access breakpoints (watchpoints),
-- Launch debuggee in integrated or external terminal,
-- Disassembly view with instruction-level stepping,
-- [Step Into Targets](https://code.visualstudio.com/updates/v1_46#_step-into-targets).
-- Caller exclusion for breakpoints.
-- Memory view.
-- Loaded modules view,
-- Python scripting,
-- HTML rendering for advanced visualizations,
-- Workspace-level defaults for launch configurations,
-- Remote debugging,
-- Reverse debugging (experimental, requires a compatible backend).
+﻿# CodeLLDB for OHOS
 
-For full details please see [User's Manual](MANUAL.md).<br>
+本仓库是 [CodeLLDB](https://github.com/vadimcn/codelldb.git) 的 fork，原拓展的说明参见：[README](README_CODELLDB.md) 。
 
-# Languages
-The primary focus of this project are the C++ and Rust languages, for which CodeLLDB includes built-in visualizers for
-vectors, strings, maps, and other standard library types.<br>
-That said, it is usable with most other compiled languages whose compiler generates compatible debugging information,
-such as Ada, Fortran, Kotlin Native, Nim, Objective-C, Pascal, [Swift](https://github.com/vadimcn/codelldb/wiki/Swift)
-and Zig.
+## 1. 构建
 
-# Supported Platforms
+### 1.1. Windows
 
-## Host
-- Linux with glibc 2.18+ for x86_64, aarch64 or armhf.
-- MacOS X 10.10+ for x86_64 and 11.0+ for arm64.
-- Windows 10 and 11 for x86_64. [See Windows notes in wiki!](https://github.com/vadimcn/codelldb/wiki/Windows)
+1. 通过 Visual Studio 安装 c++ 编译器
 
-## Target
-CodeLLDB supports AArch64, ARM, AVR, MSP430, RISCV, X86 architectures and may be used to debug on embedded platforms
-via [remote debugging](MANUAL.md#remote-debugging).
+1. 仓库路径执行
 
-# More information
-- [CodeLLDB User's Manual](MANUAL.md) - how to use this extension.
-- [Debugging in VS Code](https://code.visualstudio.com/docs/editor/debugging) - if you are new to VSCode debugging.
-- [LLDB Tutorial](https://lldb.llvm.org/use/tutorial.html) - all of LLDB's CLI commands and scripting features may be used in CodeLLDB.
-- [Wiki pages](https://github.com/vadimcn/codelldb/wiki) - [troubleshooting](https://github.com/vadimcn/codelldb/wiki/Troubleshooting) and other tips and tricks.
-- [Discussions](https://github.com/vadimcn/codelldb/discussions) - for questions and discussions.
+    ```
+    cmake -S . -B build
+    cmake --build build
+    ```
 
-# Screenshots
+## 2. 构建缓存
 
-C++ debugging with data visualization ([Howto](https://github.com/vadimcn/codelldb/wiki/Data-visualization)):<br>
-![source](images/plotting.png)
-<br>
-<br>
-Rust debugging:<br>
-![source](images/source.png)
+下面介绍本项目支持的各种构建缓存机制。本节末尾给了一个 CMakePreset.json 示例，包括所有需要的配置。
 
+## 2.1. vcpkg 缓存
 
+vcpkg 自带缓存功能。其中 asset cache 是保存下载内容的，binary cache 是保存编译结果的，可以通过环境变量控制缓存的位置。例如：
+
+```
+set X_VCPKG_ASSET_SOURCES=clear;x-azurl,file://E:/caches/asset,,readwrite
+set VCPKG_BINARY_SOURCES=clear;files,E:\caches\binary,readwrite
+```
+
+缓存 E:/caches/asset 和 E:\caches\binary 可以共享。
+
+## 2.2. ccache 缓存
+
+此外，还支持用 ccache 缓存编译命令的中间产物，方法如下：
+
+1. 安装 ccache
+
+2. 设置环境变量 CCACHE_PATH 到 ccache.exe 的 **完整路径** （相对路径不起作用）
+
+3. 用下面的命令执行 ccache 构建。
+
+```
+cmake -S . -B build -DVCPKG_TARGET_TRIPLET=x64-windows-fast -DVCPKG_HOST_TRIPLET=x64-windows-fast
+```
+
+特殊的 triplet “x64-windows-fast” 是用来配置 ccahe 的。
+
+## 2.3. CMakePresets.json 示例
+
+下面是将上述缓存配置好的一个 CMakePresets.json 示例。可以用 `cmake --preset default` 执行。注意将路径替换成本地路径。
+
+```json
+{
+    "version": 2,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 19,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": false,
+            "description": "Default preset",
+            "generator": "Visual Studio 16 2019",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": "x64-windows-fast",
+                "VCPKG_HOST_TRIPLET": "x64-windows-fast"
+            },
+            "environment": {
+                "X_VCPKG_ASSET_SOURCES": "clear;x-azurl,file://E:/caches/asset,,readwrite",
+                "VCPKG_BINARY_SOURCES": "clear;files,E:\\caches\\binary,readwrite",
+                "CCACHE_PATH": "D:\\bin\\ccache\\ccache.exe",
+                "VCPKG_MAX_CONCURRENCY": "16"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "description": "Default build preset"
+        }
+    ]
+}
+
+```

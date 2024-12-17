@@ -2,3 +2,5 @@
 /build*/
 /target/
 *.pyc
+CMakePresets.json
+CMakeUserPresets.json

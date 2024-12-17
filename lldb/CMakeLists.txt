@@ -20,6 +20,6 @@ else()
     file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/lib)
     file(CREATE_LINK ${LLDB_PACKAGE}/bin ${CMAKE_CURRENT_BINARY_DIR}/bin SYMBOLIC)
     file(CREATE_LINK ${LLDB_PACKAGE}/lib ${CMAKE_CURRENT_BINARY_DIR}/lib SYMBOLIC)
-
+    file(CREATE_LINK ${LLDB_PACKAGE}/include ${CMAKE_CURRENT_BINARY_DIR}/include SYMBOLIC)
     # Don't check dependencies in symlinked LLDB, as it contains many files that won't be included in the package.
 endif()

@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
+include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 project(CodeLLDB)
 enable_testing()
 
-set(VERSION "1.11.1") # Base version
+# find 7z
+find_program(7Z_EXECUTABLE_PATH "7z" REQUIRED)
+
+set(VERSION "1.11.1")
 
 include(cmake/CopyFiles.cmake)
 
@@ -16,7 +20,15 @@ endif()
 set(VERSION "${VERSION}${VERSION_SUFFIX}")
 message("Version ${VERSION}")
 
-set(LLDB_PACKAGE $ENV{LLDB_PACKAGE} CACHE PATH "Zip archive containing LLDB files")
+# find lldb package
+if (WIN32)
+    find_path(LLDB_PACKAGE_DIR "liblldb.dll" REQUIRED)
+else()
+    message(FATAL_ERROR "unknown platform")
+endif()
+
+set(LLDB_PACKAGE "${LLDB_PACKAGE_DIR}/../" CACHE PATH "Zip archive containing LLDB files" FORCE)
+
 if (LLDB_PACKAGE)
     message("Using LLDB_PACKAGE=${LLDB_PACKAGE}")
 else()

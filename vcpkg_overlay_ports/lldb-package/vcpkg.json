@@ -1,0 +1,29 @@
+{
+    "name": "lldb-package",
+    "version": "18.1.6",
+    "port-version": 3,
+    "description": "The LLVM Compiler Infrastructure.",
+    "homepage": "https://gitee.com/openharmony/third_party_llvm-project",
+    "license": "Apache-2.0 WITH LLVM-exception",
+    "dependencies": [
+      "liblzma",
+      "python3",
+      "zlib",
+      {
+        "name": "atl",
+        "platform": "windows"
+      },
+      {
+        "name": "vcpkg-cmake",
+        "host": true
+      },
+      {
+        "name": "vcpkg-cmake-config",
+        "host": true
+      },
+      {
+        "name": "vcpkg-cmake-get-vars",
+        "host": true
+      }
+    ]
+}
