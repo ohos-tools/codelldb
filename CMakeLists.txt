@@ -23,6 +23,10 @@ message("Version ${VERSION}")
 # find lldb package
 if (WIN32)
     find_path(LLDB_PACKAGE_DIR "liblldb.dll" REQUIRED)
+    set(CARGO_PATH "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/rust/bin/cargo.exe")
+    if (NOT EXISTS "${CARGO_PATH}")
+        message(FATAL_ERROR "cargo not found at ${CARGO_PATH}")
+    endif()
 else()
     message(FATAL_ERROR "unknown platform")
 endif()
@@ -151,7 +155,7 @@ add_custom_target(update_lockfiles
     COMMAND ${UpdateFile} ${CMAKE_CURRENT_SOURCE_DIR}/package-lock.json ${CMAKE_CURRENT_BINARY_DIR}/package-lock.json
     COMMAND ${NPM} update
     COMMAND ${UpdateFile} ${CMAKE_CURRENT_BINARY_DIR}/package-lock.json ${CMAKE_CURRENT_SOURCE_DIR}/package-lock.json
-    COMMAND cargo update
+    COMMAND "${CARGO_PATH}" update
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     USES_TERMINAL
 )

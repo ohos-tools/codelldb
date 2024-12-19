@@ -52,7 +52,7 @@ externalproject_add(cargo_build
     CONFIGURE_COMMAND ""
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}"
-    BUILD_COMMAND cargo rustc --package=codelldb --bin=codelldb ${CargoFlags} --features=weaklink -- ${RustcFlags}
+    BUILD_COMMAND "${CARGO_PATH}" rustc --package=codelldb --bin=codelldb ${CargoFlags} --features=weaklink -- ${RustcFlags}
     BUILD_BYPRODUCTS ${CargoOutDir}/${CodelldbExe}
     BUILD_ALWAYS ON
     USES_TERMINAL_BUILD ON
@@ -69,7 +69,7 @@ add_custom_target(codelldb_exe
 )
 
 add_test(NAME cargo_test
-    COMMAND cargo test --lib -p=lldb -p=adapter-protocol -p=codelldb ${CargoFlags} -vv -- --test-threads=1
+    COMMAND "${CARGO_PATH}" test --lib -p=lldb -p=adapter-protocol -p=codelldb ${CargoFlags} -vv -- --test-threads=1
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 

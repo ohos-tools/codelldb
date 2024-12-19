@@ -1,5 +1,6 @@
 vcpkg_find_acquire_program(SWIG)
 vcpkg_find_acquire_program(7Z)
+set(VCPKG_BUILD_TYPE "release")
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
 set(VCPKG_POLICY_ALLOW_DEBUG_INCLUDE enabled)
 set(VCPKG_POLICY_ALLOW_EXES_IN_BIN enabled)
@@ -34,6 +35,7 @@ vcpkg_cmake_configure(
         "-DLLDB_PYTHON_HOME=."
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
         "-DLLDB_INCLUDE_TESTS=OFF"
+        "-DCMAKE_INSTALL_PREFIX=${CURRENT_PACKAGES_DIR}/tools/llvm/"
 )
 
 vcpkg_cmake_install(ADD_BIN_TO_PATH)
@@ -51,17 +53,17 @@ foreach(build_type IN ITEMS debug release)
         message(STATUS "Creating ${config} LLDB package")
         # Copy python DLLs and Lib
         file(COPY "${CURRENT_INSTALLED_DIR}/tools/python3/DLLs"
-            DESTINATION "${CURRENT_PACKAGES_DIR}/${debug_or_none}/bin/")
+            DESTINATION "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/bin/")
         file(COPY "${CURRENT_INSTALLED_DIR}/tools/python3/Lib"
-            DESTINATION "${CURRENT_PACKAGES_DIR}/${debug_or_none}/bin/")
+            DESTINATION "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/bin/")
         # Delete everything in lib (static libs, we don't need them),
         # except for site-packages folder
-        file(RENAME "${CURRENT_PACKAGES_DIR}/${debug_or_none}/lib/site-packages" "${CURRENT_PACKAGES_DIR}/${debug_or_none}/temp-site-packages")
-        file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/${debug_or_none}/lib/")
-        file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/${debug_or_none}/lib/")
-        file(RENAME "${CURRENT_PACKAGES_DIR}/${debug_or_none}/temp-site-packages" "${CURRENT_PACKAGES_DIR}/${debug_or_none}/lib/site-packages")
+        file(RENAME "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/lib/site-packages" "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/temp-site-packages")
+        file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/lib/")
+        file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/lib/")
+        file(RENAME "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/temp-site-packages" "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/lib/site-packages")
          # Remove __pycache__ directories from bin
-        file(GLOB_RECURSE files "${CURRENT_PACKAGES_DIR}/${debug_or_none}/**/*.pyc")
+        file(GLOB_RECURSE files "${CURRENT_PACKAGES_DIR}/tools/llvm/${debug_or_none}/**/*.pyc")
         foreach(file ${files})
             file(REMOVE ${pycache_dir})
         endforeach()

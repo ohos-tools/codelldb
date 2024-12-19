@@ -1,11 +1,8 @@
 ﻿{
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
     "dependencies": [
-        "lldb-package",
-        {
-            "name": "7zip-tool",
-            "host": true
-        }
+        "rust-tool",
+        "lldb-package"
     ],
     "vcpkg-configuration": {
         "overlay-ports": [
